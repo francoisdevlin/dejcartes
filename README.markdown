@@ -31,6 +31,8 @@ And you should see a chart that looks like this:
 
 <img src="docs/imgs/test-pie.png">
 
+(docs/imgs/test-pie.png)
+
 Dejcartes is a young project and is lacking in comprehensive documentation. The 
 best reference right now is the demo.clj example code and the JFreeChart API 
 documentation. Future improvements will include more documentation, an Agent 

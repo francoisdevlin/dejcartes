@@ -1,0 +1,80 @@
+<project name="dejcartes" default="jar">
+  <description>
+    Dejcartes: a wrapper for JFreeChart
+  </description>
+  
+  <property file="build.properties"/>
+  <property name="clojure.jar" location="" />
+  <property name="clojure-contrib.jar" location="" />
+  <property name="build.dir" location="classes"/>
+  <property name="libs.dir" location="libs"/>
+  <property name="source.dir" location="src"/>
+  <property name="dejcartes.jar" location="dejcartes.jar"/>
+  <property name="vimclojure.jar" location=""/>  
+
+  <target name="clean" description="Remove generated files">
+    <delete file="${dejcartes.jar}"/>
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="init" description="Compile sources">
+    <java classname="clojure.lang.Compile" fork="true">
+      <classpath>
+        <path location="${clojure.jar}"/>
+        <path location="${clojure-contrib.jar}"/>
+        <path location="${build.dir}"/>
+        <path location="${source.dir}"/>
+        <fileset dir="${libs.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+      <sysproperty key="clojure.compile.path" value="${build.dir}"/>
+      <arg value="com.dejcartes.chart"/>
+    </java>
+  </target>
+
+  <target name="jar" description="Create jar file" depends="compile">
+    <jar jarfile="${dejcartes.jar}">
+      <path location="LICENSE"/>
+      <fileset dir="${source.dir}" includes="**/*.clj"/>
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="demo" description="Run Dejcartes demo script">
+    <java classname="clojure.lang.Script" fork="true">
+      <arg value="demo.clj"/>
+      <classpath>
+        <path location="."/>
+        <path location="${clojure.jar}"/>
+        <path location="${clojure-contrib.jar}"/>
+        <path location="${source.dir}"/>
+        <path location="${libs.dir}"/>
+        <fileset dir="${libs.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </java>
+  </target>
+
+
+  <target name="vim" description="Start a vimclojure instance with this CP">
+    <java classname="com.martiansoftware.nailgun.NGServer" fork="true">
+      <classpath>
+        <path location="${clojure.jar}"/>
+        <path location="${clojure-contrib.jar}"/>
+        <path location="${build.dir}"/>
+        <path location="${source.dir}"/>
+        <fileset dir="${libs.dir}">
+          <include name="*.jar"/>
+        </fileset>
+        <path location="${vimclojure.jar}" />
+      </classpath>
+    </java>
+  </target>
+</project>
