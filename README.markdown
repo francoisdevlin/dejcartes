@@ -29,7 +29,7 @@ is a brief excerpt:
 
 And you should see a chart that looks like this:
 
-<img src="docs/imgs/test-pie.png">
+<img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-pie.png">
 
 (docs/imgs/test-pie.png)
 
