@@ -33,7 +33,9 @@ The following methods generate category plots
 
 * pie
 
-<img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-pie.png">
+<div align="center">
+	<img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-pie.png">
+</div>
 
 * pie3D
 * ring
