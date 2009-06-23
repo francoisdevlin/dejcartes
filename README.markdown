@@ -19,6 +19,9 @@ is a brief excerpt:
 	(chart/make-window "Editor Survey" 
 		(chart/pie (series/pie-data (demo/editor-survey 2009))))
 
+	(chart/make-window "Editor Survey" 
+		(chart/bar (series/trans-cat-data demo/editor-survey)))			
+
 And you should see a chart that looks like this: 
 
 <img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-pie.png">

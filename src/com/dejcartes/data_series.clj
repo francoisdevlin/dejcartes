@@ -26,6 +26,38 @@
           (.addValue cat data 0 title)))
       cat)))
 
+;;;    Chart: A simple Clojure wrapping of JFreeChart factory methods
+;;;    Copyright (C) 2009  Mark Fredrickson
+;;;
+;;;    Additions by Sean Devlin
+;;;
+;;;    This library is free software; you can redistribute it and/or
+;;;    modify it under the terms of the GNU Lesser General Public
+;;;    License as published by the Free Software Foundation; either
+;;;    version 2.1 of the License, or (at your option) any later version.
+;;;
+;;;    This library is distributed in the hope that it will be useful,
+;;;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;;    Lesser General Public License for more details.
+;;;
+;;;    You should have received a copy of the GNU Lesser General Public
+;;;    License along with this library; if not, write to the Free Software
+;;;    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+(defn trans-cat-data
+  "Internal data to create category datasets.  Expects a map as an input... sorta"
+  ([seqs]
+    (let [cat (new DefaultCategoryDataset)]
+      (doseq [[title data] seqs]
+        (if (coll? data)
+          (doseq [[idx v] (indexed data)]
+            (if (coll? v)
+              (.addValue cat (second v) title (first v))
+              (.addValue cat v title idx)))
+          (.addValue cat data title 0)))
+      cat)))
+
 (defn pie-data
   "Internal function to convert from a sequence of pairs into a pie chart dataset"
   ([data]

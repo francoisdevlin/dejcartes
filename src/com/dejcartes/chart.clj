@@ -1,6 +1,8 @@
 ;;;    Chart: A simple Clojure wrapping of JFreeChart factory methods
 ;;;    Copyright (C) 2009  Mark Fredrickson
 ;;;
+;;;    Additions by Sean Devlin
+;;;
 ;;;    This library is free software; you can redistribute it and/or
 ;;;    modify it under the terms of the GNU Lesser General Public
 ;;;    License as published by the Free Software Foundation; either
@@ -17,7 +19,8 @@
 
 (ns com.dejcartes.chart
   (:refer-clojure)
-  (:use clojure.contrib.seq-utils)
+  (:use clojure.contrib.seq-utils
+	clojure.contrib.str-utils)
   (:import 
     (org.jfree.chart JFreeChart ChartFactory ChartFrame)
     (org.jfree.chart.plot PlotOrientation)
@@ -25,6 +28,21 @@
     (org.jfree.data.general DefaultPieDataset PieDataset)
     (org.jfree.data.xy XYDataset XYSeries XYSeriesCollection)))
 
+(defn capitalize
+  [#^String input-str]
+  (str (.toUpperCase (str (first input-str))) 
+       (apply str (rest input-str))))
+
+(defn camelize
+  [#^String input-str]
+  (let [words (seq (.split input-str "[-\\s+]"))]
+    (apply str (.toLowerCase (first words)) (map capitalize (rest words)))))
+
+(defmacro set-bean
+  [a-bean a-key a-map]
+  (let [bean-accessor-sym (symbol (str "." (camelize (apply str "set " (rest (str a-key))))))]
+    `(when (contains? ~a-map ~a-key)
+       (~bean-accessor-sym ~a-bean (~a-map ~a-key)))))
 
 (def *defaults* {:legend true
 		 :title ""
@@ -85,18 +103,20 @@
   [#^JFreeChart chart & params]
   (let [local-params (apply params-to-map params)]
     (do
-      (when (:anti-alias local-params)
-	(. chart setAntiAlias (:anti-alias local-params)))
-      (when (:background-img local-params)
-	(. chart setBackgroundImage (:background-img local-params)))
-      (when (:background-img-align local-params)
-	(. chart setBackgroundImageAlignment (:background-img-align local-params)))
-      (when (:background-img-alpha local-params)
-	(. chart setBackgroundImageAlpha (:background-img-alpha local-params)))
-      (when (:background-paint local-params)
-	(. chart setBackgroundPaint (:background-paint local-params)))
-      (when (:border-visible local-params)
-	(. chart setBorderVisible (:border-visible local-params)))
+      (set-bean chart :anti-alias local-params)
+      (set-bean chart :background-image local-params)
+      (set-bean chart :background-image-alignment local-params)
+      (set-bean chart :background-image-alpha local-params)
+      (set-bean chart :background-paint local-params)
+      (set-bean chart :border-stroke local-params)
+      (set-bean chart :border-paint local-params)
+      (set-bean chart :border-visible local-params)
+      (set-bean chart :notify local-params)
+      (set-bean chart :padding local-params)
+      (set-bean chart :rendering-hints local-params)
+      (set-bean chart :subtitles local-params)
+      (set-bean chart :text-anti-alias local-params)
+      (set-bean chart :title local-params)
       chart)))
 
 (defmulti create-chart chart-dispatch)
@@ -152,38 +172,69 @@
 	       (:tooltips local-params)
 	       (:urls local-params)))))
     
-
 (defn build-chart
   "Not really supposed to be called directly."
   [data type param-map]
   (let [local-params (assoc param-map :type type)
 	chart (create-chart data local-params)]
-    chart))
-
-    ;(if chart
-    ;  (apply set-chart chart local-params))))
+    (if chart
+      (set-chart chart local-params))))
 
 (defmacro defchart
-  [name & body]
-  (let [d-p (gensym "data_")
-	p-p (gensym "params_")
-	kw (keyword (str name))]
-    `(defn ~name
-       [~d-p & ~p-p]
-       (let [~'local-chart (build-chart ~d-p ~kw (apply params-to-map ~p-p))]
-	 (do
-	   ~@body
-	   ~'local-chart)))))
+  ([name] (defchart name (gensym "chart-name_") (gensym "params-map-name_")))
+  ([name chart-name param-map-name & body]
+     (let [d-p (gensym "data_")
+	   p-p (gensym "params_")
+	   kw (keyword (str name))]
+       `(defn ~name
+	  [~d-p & ~p-p]
+	  (let [~param-map-name (apply params-to-map ~p-p)
+		~chart-name (build-chart ~d-p ~kw ~param-map-name)]
+	    (do
+	      ~@body
+	      ~chart-name))))))
+
+(defmacro render-context
+  [map-binding object-binding & body]
+  `(let [~(first map-binding) (~(second map-binding) :renderer)]
+     (when ~(first map-binding)
+       (let [~(first object-binding) (.. ~(second object-binding) getPlot getRenderer)]
+	 (do ~@body)))))
+
+(defmacro plot-context
+  [map-binding object-binding & body]
+  `(let [~(first map-binding) (~(second map-binding) :plot)]
+     (when ~(first map-binding)
+       (let [~(first object-binding) (. ~(second object-binding) getPlot)]
+	 (do ~@body)))))	     
 
 ;Pie Charts
-(defchart pie)
+(defchart pie local-chart local-map
+  (plot-context [plot-opts local-map]
+		[plot local-chart]
+		(set-bean plot :ignore-zero-values plot-opts)
+		(set-bean plot :ignore-null-values plot-opts)))
+
 (defchart pie3D)
 (defchart ring)
 
 ;;Category Charts
 (defchart area)
-(defchart bar)
-(defchart bar3D)
+
+(defchart bar local-chart local-map
+  (do
+    (render-context [render-opts local-map]
+		    [renderer local-chart]
+		    (set-bean renderer :draw-bar-outline render-opts)
+		    (set-bean renderer :item-margin render-opts))))
+	  
+(defchart bar3D local-chart local-map
+  (do
+    (render-context [render-opts local-map]
+		    [renderer local-chart]
+		    (set-bean renderer :draw-bar-outline render-opts)
+		    (set-bean renderer :item-margin render-opts))))
+
 (defchart line)
 (defchart line3D)
 (defchart waterfall)
@@ -203,7 +254,7 @@
     (.setVisible true)))
 
 (defn to-png
-  "NOt quite sure how to get JPEG output yet."
+  "Not quite sure how to get JPEG output yet."
   [#^String filename #^JFreeChart chart]
   (javax.imageio.ImageIO/write 
    (. chart createBufferedImage 400 300)
