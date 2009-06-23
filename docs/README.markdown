@@ -27,6 +27,9 @@ The following methods generate category plots
 * bar3D
 * line
 * line3D
+* stacked-area
+* stacked-bar
+* stacked-bar3D
 * waterfall
 
 ##Pie plots

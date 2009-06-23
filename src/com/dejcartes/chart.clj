@@ -62,12 +62,15 @@
     (apply hash-map params)))
 
 ;;These maps wrap the Java factory methods
-(def *cat-facts* {:area        (fn[t c v d o l tt u] (ChartFactory/createAreaChart t c v d o l tt u))
-		  :bar         (fn[t c v d o l tt u] (ChartFactory/createBarChart t c v d o l tt u))
-		  :bar3D       (fn[t c v d o l tt u] (ChartFactory/createBarChart3D t c v d o l tt u))
-		  :line        (fn[t c v d o l tt u] (ChartFactory/createLineChart t c v d o l tt u))
-		  :line3D      (fn[t c v d o l tt u] (ChartFactory/createLineChart3D t c v d o l tt u))
-		  :waterfall   (fn[t c v d o l tt u] (ChartFactory/createWaterfallChart t c v d o l tt u))
+(def *cat-facts* {:area          (fn[t c v d o l tt u] (ChartFactory/createAreaChart t c v d o l tt u))
+		  :bar           (fn[t c v d o l tt u] (ChartFactory/createBarChart t c v d o l tt u))
+		  :bar3D         (fn[t c v d o l tt u] (ChartFactory/createBarChart3D t c v d o l tt u))
+		  :line          (fn[t c v d o l tt u] (ChartFactory/createLineChart t c v d o l tt u))
+		  :line3D        (fn[t c v d o l tt u] (ChartFactory/createLineChart3D t c v d o l tt u))
+		  :stacked-area  (fn[t c v d o l tt u] (ChartFactory/createStackedAreaChart t c v d o l tt u))
+		  :stacked-bar   (fn[t c v d o l tt u] (ChartFactory/createStackedBarChart t c v d o l tt u))
+		  :stacked-bar3D (fn[t c v d o l tt u] (ChartFactory/createStackedBarChart3D t c v d o l tt u))
+		  :waterfall     (fn[t c v d o l tt u] (ChartFactory/createWaterfallChart t c v d o l tt u))
 		  })
 
 (def *pie-facts* {:pie    (fn[t d l tt u] (ChartFactory/createPieChart t d l tt u))
@@ -237,6 +240,21 @@
 
 (defchart line)
 (defchart line3D)
+(defchart stacked-area)
+(defchart stacked-bar local-chart local-map
+  (do
+    (render-context [render-opts local-map]
+		    [renderer local-chart]
+		    (set-bean renderer :draw-bar-outline render-opts)
+		    (set-bean renderer :item-margin render-opts))))
+
+(defchart stacked-bar3D local-chart local-map
+  (do
+    (render-context [render-opts local-map]
+		    [renderer local-chart]
+		    (set-bean renderer :draw-bar-outline render-opts)
+		    (set-bean renderer :item-margin render-opts))))
+
 (defchart waterfall)
 
 ;XY Charts

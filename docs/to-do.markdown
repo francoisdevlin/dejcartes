@@ -39,21 +39,12 @@ Creates a chart that displays multiple pie plots.
 	createPolarChart(String title, XYDataset dataset, boolean legend, boolean tooltips, boolean urls)
 Creates a polar plot for the specified dataset (x-values interpreted as angles in degrees).
 
-#Stacked
-	createStackedAreaChart(String title, String categoryAxisLabel, String valueAxisLabel, CategoryDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
-Creates a stacked area chart with default settings.
-
-	createStackedBarChart(String title, String domainAxisLabel, String rangeAxisLabel, CategoryDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
-Creates a stacked bar chart with default settings.
-
-	createStackedBarChart3D(String title, String categoryAxisLabel, String valueAxisLabel, CategoryDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
-Creates a stacked bar chart with a 3D effect and default settings.
-
-	createStackedXYAreaChart(String title, String xAxisLabel, String yAxisLabel, TableXYDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
-Creates a stacked XY area plot.
 
 #???
 I don't know where to group these.  They're just weird.
+
+	createStackedXYAreaChart(String title, String xAxisLabel, String yAxisLabel, TableXYDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
+Creates a stacked XY area plot.
 
 	createWaferMapChart(String title, WaferMapDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls)
 Creates a wafer map chart.
