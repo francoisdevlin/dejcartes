@@ -35,6 +35,8 @@
       </classpath>
       <sysproperty key="clojure.compile.path" value="${build.dir}"/>
       <arg value="com.dejcartes.chart"/>
+      <arg value="com.dejcartes.data-series"/>
+      <arg value="com.dejcartes.demo-data"/>
     </java>
   </target>
 

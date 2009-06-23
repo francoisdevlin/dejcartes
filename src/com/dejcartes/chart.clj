@@ -43,6 +43,7 @@
     (first params)
     (apply hash-map params)))
 
+;;These maps wrap the Java factory methods
 (def *cat-facts* {:area        (fn[t c v d o l tt u] (ChartFactory/createAreaChart t c v d o l tt u))
 		  :bar         (fn[t c v d o l tt u] (ChartFactory/createBarChart t c v d o l tt u))
 		  :bar3D       (fn[t c v d o l tt u] (ChartFactory/createBarChart3D t c v d o l tt u))
@@ -67,43 +68,8 @@
 			:multi-pie3D (fn[t d to l tt u] (ChartFactory/createMultiplePieChart t d to l tt u))
 			})
 
-(defn- cat-data
-  "Internal data to create category datasets.  Expects a map as an input... sorta"
-  ([seqs]
-    (let [cat (new DefaultCategoryDataset)]
-      (doseq [[title data] seqs]
-        (if (coll? data)
-          (doseq [[idx v] (indexed data)]
-            (if (coll? v)
-              (.addValue cat (second v) (first v) title)
-              (.addValue cat v idx title)))
-          (.addValue cat data 0 title)))
-      cat)))
-
-(defn- pie-data
-  "Internal function to convert from a sequence of pairs into a pie chart dataset"
-  ([data]
-    (let [pds (new DefaultPieDataset)]
-      (doseq [i data] (.setValue pds (first i) (second i)))
-      pds)))
-
-(defn- xy-data
-  "Internal function to make an XYSeries out of a seq"
-  ([sequence] (xy-data "" sequence))
-  ([title sequence]
-    (let [xys (new XYSeries title)]
-      (doseq [pair sequence] (.add xys (first pair) (second pair)))
-      xys)))
-
-(defn- xy-data-collection
-  "Internal function to convert a set of seqs into xy pair sequences"
-  ([seqs]
-   (let [ds (new XYSeriesCollection)]
-     (doseq [[title series] seqs]
-       (.addSeries ds (xy-data title series)))
-     ds)))
-
-(defn- chart-dispatch
+;;Hopefully straightforward dispatch function.
+(defn chart-dispatch
   [data map-params]
   (let [local-params (merge *defaults* map-params)
 	chart-type (:type local-params)]
@@ -133,8 +99,6 @@
 	(. chart setBorderVisible (:border-visible local-params)))
       chart)))
 
-;(defmulti create-chart (fn[d p](chart-dispatch d p)))
-
 (defmulti create-chart chart-dispatch)
 
 (defmethod create-chart ::category
@@ -145,7 +109,7 @@
       (factory (:title local-params)
 	       (:cat-axis-label local-params)
 	       (:val-axis-label local-params)
-	       (cat-data data)
+	       data
 	       (:orientation local-params)
 	       (:legend local-params)
 	       (:tooltips local-params)
@@ -157,7 +121,7 @@
 	factory (*pie-facts* (:type local-params))]
     (if factory
       (factory (:title local-params)
-	       (pie-data data)
+	       data
 	       (:legend local-params)
 	       (:tooltips local-params)
 	       (:urls local-params)))))
@@ -168,7 +132,7 @@
 	factory (*pie-facts* (:type local-params))]
     (if factory
       (factory (:title local-params)
-	       (cat-data data)
+	       data
 	       (:table-order local-params)
 	       (:legend local-params)
 	       (:tooltips local-params)
@@ -177,12 +141,12 @@
 (defmethod create-chart ::xy
   [data map-params]
   (let [local-params (merge *defaults* map-params)
-	factory (*cat-facts* (:type local-params))]
+	factory (*xy-facts* (:type local-params))]
     (if factory
       (factory (:title local-params)
 	       (:x-axis-label local-params)
 	       (:y-axis-label local-params)
-	       (xy-data data)
+	       data
 	       (:orientation local-params)
 	       (:legend local-params)
 	       (:tooltips local-params)
