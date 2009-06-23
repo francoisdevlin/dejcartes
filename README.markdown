@@ -27,11 +27,23 @@ And you should see a chart that looks like this:
 
 (Not available?  Try looking in docs/imgs/test-pie.png)
 
+##Bar Charts
+
+Every method is configurable with keyword parameters.  Here's an example bar chart
+
+	(chart/mae-windwo "Editor Survey" 
+		   (chart/bar 	(series/trans-cat-data demo/editor-survey)
+		 				:renderer {:item-margin 0.0}))
+
+<img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-bar.png">
+
+(Not available?  Try looking in docs/imgs/test-bar.png)
+
 ##XY Charts
 
 Let's try a quick xy plot
 
-	(chart/make-window "Editor Survey" 
+	(chart/make-window "Trig Info"
 		   (chart/xy-line (series/xy-collection 
 				   {"sin" (series/math-map demo/sin-d demo/degrees)
 				    "cos" (series/math-map demo/cos-d demo/degrees)})))
