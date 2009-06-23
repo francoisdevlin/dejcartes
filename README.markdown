@@ -17,7 +17,8 @@ is a brief excerpt:
     (require '[com.dejcartes [chart :as chart] [data-series :as series] [demo-data :as demo]])
             
 	(chart/make-window "Editor Survey" 
-		(chart/pie (series/pie-data (demo/editor-survey 2009))))
+		(chart/pie 	(series/pie-data (demo/editor-survey 2009))
+		 			:title "2009 Editor Data" :legend false))
 
 	(chart/make-window "Editor Survey" 
 		(chart/bar (series/trans-cat-data demo/editor-survey)))			
