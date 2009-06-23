@@ -82,3 +82,7 @@
      (doseq [[title series] seqs]
        (.addSeries ds (xy-series title series)))
      ds)))
+
+(defn math-map
+  [a-fn domain]
+  (map #(vector % (a-fn %)) domain))

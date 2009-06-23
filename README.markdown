@@ -14,20 +14,33 @@ as needed. A demo showing many the supported functions and Clojure native data
 structures is included and can be run from the command line with "ant demo". Here 
 is a brief excerpt:
 
+##Pie Charts
+
     (require '[com.dejcartes [chart :as chart] [data-series :as series] [demo-data :as demo]])
             
 	(chart/make-window "Editor Survey" 
-		(chart/pie 	(series/pie-data (demo/editor-survey 2009))
-		 			:title "2009 Editor Data" :legend false))
-
-	(chart/make-window "Editor Survey" 
-		(chart/bar (series/trans-cat-data demo/editor-survey)))			
+		(chart/pie 	(series/pie-data (demo/editor-survey 2009))))
 
 And you should see a chart that looks like this: 
 
 <img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-pie.png">
 
 (Not available?  Try looking in docs/imgs/test-pie.png)
+
+##XY Charts
+
+Let's try a quick xy plot
+
+	(chart/make-window "Editor Survey" 
+		   (chart/xy-line (series/xy-collection 
+				   {"sin" (series/math-map demo/sin-d demo/degrees)
+				    "cos" (series/math-map demo/cos-d demo/degrees)})))
+
+<img src="http://cloud.github.com/downloads/francoisdevlin/dejcartes/test-xy.png">
+
+(Not available?  Try looking in docs/imgs/test-xy.png)
+
+#About Dejcartes
 
 Dejcartes is a young project and is lacking in comprehensive documentation. The 
 best reference right now is the demo.clj example code and the JFreeChart API 
